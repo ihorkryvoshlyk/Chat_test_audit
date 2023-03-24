@@ -4,6 +4,10 @@
 */
 
 /* Validation related  constants starts*/
+module.exports.FIRSTNAME_REQUIRED = `First name must be required.`;
+module.exports.LASTNAME_REQUIRED = `Last name must be required.`;
+module.exports.EMAIL_REQUIRED = `Email address must be required.`;
+module.exports.EMAIL_INVALID = `Email address is invalid.`;
 module.exports.USERNAME_REQUIRED = `Username must be required.`;
 module.exports.PASSWORD_REQUIRED = `Password must be required.`;
 module.exports.PASSWORD_LENGTH = `Please enter a password with 6 or more characters`
@@ -23,6 +27,7 @@ module.exports.SERVER_ERROR_HTTP_CODE = 412;
 module.exports.SERVER_NOT_ALLOWED_HTTP_CODE = 503;
 module.exports.SERVER_OK_HTTP_CODE = 200;
 module.exports.SERVER_NOT_FOUND_HTTP_CODE = 404;
+module.exports.SERVER_BAD_REQUEST_CODE = 400;
 /* HTTP status codeconstant ends */
 
 /* Route related constants starts*/

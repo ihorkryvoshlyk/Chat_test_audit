@@ -6,8 +6,6 @@
 
 'use strict';
 
-const path = require('path');
-
 const socketController = require("../controllers/socket.controller")
 const CONSTANTS = require('../config/constants');
 
@@ -35,7 +33,7 @@ class Socket{
 								userId: data.userId,
 								socketId: false
 							}),
-							socketController.getChatList( socket.id )
+							socketController.getChatList( data.userId )
 							]);
 						this.io.to(socket.id).emit(`chat-list-response`, {
 							error : false,
@@ -48,6 +46,7 @@ class Socket{
 							chatList : UserInfoResponse
 						});
 					} catch ( error ) {
+						console.log(error)
 						this.io.to(socket.id).emit(`chat-list-response`,{
 							error : true ,
 							chatList : []

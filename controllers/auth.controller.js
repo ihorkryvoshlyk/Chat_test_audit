@@ -1,91 +1,121 @@
-const Mongodb = require("./../config/db");
+const User = require("../models/User");
+const CONSTANTS = require("../config/constants");
+const passwordHash = require("../utils/password-hash")
+const { validationResult } = require('express-validator');
 
+exports.signup = async (req,res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(CONSTANTS.SERVER_BAD_REQUEST_CODE).json({ errors: errors.array() });
+  }
 
-exports.userNameCheck = (data) => {
-  return new Promise( async (resolve, reject) => {
-    try {
-      const [DB, ObjectID] = await Mongodb.onConnect();
-      DB.collection('users').find(data).count( (error, result) => {
-        DB.close();
-        if( error ){
-          reject(error);
-        }
-        resolve(result);
-      });
-    } catch (error) {
-      reject(error)
+  try {
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const email = req.body.email;
+    const password = req.body.password;
+
+    const user = await User.findOne({
+      email
+    });
+
+    if(user) {
+      return res.status(CONSTANTS.SERVER_BAD_REQUEST_CODE).json({
+        email: "Email is used already. Please use another"
+      })
     }
-  });
+
+
+    const newUser = await User.create({
+      firstName,
+      lastName,
+      email,
+      password: passwordHash.createHash(password)
+    });
+
+    res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json(newUser)
+  } catch (error) {
+      res.status(CONSTANTS.SERVER_ERROR_HTTP_CODE).json({
+      error : true,
+      message : CONSTANTS.SERVER_ERROR_MESSAGE
+    });
+  }
 }
 
-exports.registerUser = (data) => {
-  return new Promise( async (resolve, reject) => {
-    try {
-      const [DB, ObjectID] = await Mongodb.onConnect();
-      DB.collection('users').insertOne(data, (err, result) =>{
-        DB.close();
-        if( err ){
-          reject(err);
-        }
-        resolve(result);
+exports.signin = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(CONSTANTS.SERVER_BAD_REQUEST_CODE).json({ errors: errors.array() });
+  }
+
+  try {
+    const {email, password} = req.body;
+
+    const user = await User.findOne({
+      email
+    });
+
+    if(!user) {
+      return res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
+        error : true,
+        message : CONSTANTS.USER_LOGIN_FAILED
       });
-    } catch (error) {
-      reject(error)
-    }	
-  });
-}
-
-exports.getUserByUsername = (username) => {
-  return new Promise( async (resolve, reject) => {
-    try {
-      const [DB, ObjectID] = await Mongodb.onConnect();
-      DB.collection('users').find({
-        username :  username
-      }).toArray( (error, result) => {
-        DB.close();
-        if( error ){
-          reject(error);
-        }
-        resolve(result[0]);
-      });
-    } catch (error) {
-      reject(error)
-    }	
-  });
-}
-
-exports.makeUserOnline = (userId) => {
-  return new Promise( async (resolve, reject) => {
-    try {
-      const [DB, ObjectID] = await Mongodb.onConnect();
-      DB.collection('users').findAndModify({
-        _id : ObjectID(userId)
-      },[],{ "$set": {'online': 'Y'} },{new: true, upsert: true}, (err, result) => {
-        DB.close();
-        if( err ){
-          reject(err);
-        }
-        resolve(result.value);
-      });
-    } catch (error) {
-      reject(error)
-    }	
-  });
-}
-
-exports.userSessionCheck = (data) => {
-  return new Promise( async (resolve, reject) => {
-    try {
-      const [DB, ObjectID] = await Mongodb.onConnect();
-      DB.collection('users').findOne( { _id : ObjectID(data.userId) , online : 'Y'}, (err, result) => {
-        DB.close();
-        if( err ){
-          reject(err);
-        }
-        resolve(result);
-      });	
-    } catch (error) {
-      reject(error)
     }
-  });
+
+    if(passwordHash.compareHash(password, user.password)) {
+      user.isOnline = "Y";
+      await user.save();
+      return res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
+        error : false,
+        userId : user._id,
+        message : CONSTANTS.USER_LOGIN_OK
+      });
+    }
+
+  } catch (error) {
+    res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
+      error : true,
+      message : CONSTANTS.USER_LOGIN_FAILED
+    });
+  }
+}
+
+exports.userSessionCheck = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(CONSTANTS.SERVER_BAD_REQUEST_CODE).json({ errors: errors.array() });
+  }
+
+  try {
+    const {userId} = req.body;
+  
+    const user = await User.findOne({
+      _id: userId
+    });
+
+    if(!user) {
+      return res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
+        error: true,
+        message: CONSTANTS.USER_NOT_FOUND 
+      })
+    }
+
+    if(user.isOnline === "N") {
+      return res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
+        error: true,
+        message: CONSTANTS.USER_NOT_LOGGED_IN
+      })
+    }
+
+    return res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
+      error: true,
+      message: CONSTANTS.USER_LOGIN_OK
+    })
+    
+  } catch (error) {
+    res.status(CONSTANTS.SERVER_ERROR_HTTP_CODE).json({
+      error : true,
+      message : CONSTANTS.USER_NOT_FOUND
+    });
+  }
 }

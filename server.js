@@ -8,6 +8,7 @@
 const express = require("express");
 const http = require('http');
 const socketio = require('socket.io');
+const cors = require("cors")
 
 const socketEvents = require('./web/socket'); 
 const routes = require('./web/routes'); 
@@ -19,16 +20,17 @@ class Server{
 
     constructor(){
         this.app = express();
-        this.http = http.Server(this.app);
-        this.socket = socketio(this.http);
-    }
-
-    connectDB() {
-        db();
+        this.http = http.createServer(this.app);
+        this.socket = socketio(this.http, {cors: {origin: "*"}});
+        this.app.use(cors());
     }
 
     appConfig(){        
         new appConfig(this.app).includeConfig();
+    }
+
+    connectDB() {
+        db();
     }
 
     /* Including app Routes starts*/
@@ -39,8 +41,8 @@ class Server{
     /* Including app Routes ends*/  
 
     appExecute(){
-        this.connectDB();
         this.appConfig();
+        this.connectDB();
         this.includeRoutes();
 
         const port =  process.env.PORT || 4000;

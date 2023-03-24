@@ -1,175 +1,107 @@
-const Mongodb = require("./../config/db");
+const User = require("../models/User")
+const Message = require("../models/Message")
 
-exports.getUserInfo = ({userId,socketId = false}) => {
+exports.getUserInfo = async (userId, socketId = false) => {
   let queryProjection = null;
-  if(socketId){
+  if (socketId) {
     queryProjection = {
       "socketId" : true
     }
   } else {
     queryProjection = {
-      "username" : true,
-      "online" : true,
+      "firstName": true,
+      "lastName": true,
+      "email" : true,
+      "isOnline" : true,
       '_id': false,
       'id': '$_id'
     }
   }
-  return new Promise( async (resolve, reject) => {
-    try {
-      const [DB, ObjectID] = await Mongodb.onConnect();
-      DB.collection('users').aggregate([{
-        $match:  {
-          _id : ObjectID(userId)
-        }
-      },{
-        $project : queryProjection
-      }
-      ]).toArray( (err, result) => {
-        DB.close();
-        if( err ){
-          reject(err);
-        }
-        socketId ? resolve(result[0]['socketId']) : resolve(result);
-      });
-    } catch (error) {
-      reject(error)
-    }
-  });
+  try {
+    const user = await User.aggregate([
+      { $match: { _id: userId } },
+      { $project: queryProjection }
+    ]);
+    return socketId ? user[0].socketId : user;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
-exports.addSocketId = ({userId, socketId}) => {
-  const data = {
-    id : userId,
-    value : {
-      $set :{
-        socketId : socketId,
-        online : 'Y'
-      }
+exports.addSocketId = async ({userId, socketId}) => {
+  const filter = { _id: userId };
+  const update = { 
+    $set: {
+      socketId: socketId,
+      online: 'Y'
     }
   };
-  return new Promise( async (resolve, reject) => {
-    try {
-      const [DB, ObjectID] = await Mongodb.onConnect();
-      DB.collection('users').update( { _id : ObjectID(data.id)}, data.value ,(err, result) => {
-        DB.close();
-        if( err ){
-          reject(err);
-        }
-        resolve(result);
-      });
-    } catch (error) {
-      reject(error)
-    }
-  });
-}
 
-exports.getChatList = (userId) => {
-  return new Promise( async (resolve, reject) => {
-    try {
-      const [DB, ObjectID] = await Mongodb.onConnect();
-      DB.collection('users').aggregate([{
-        $match: {
-          'socketId': { $ne : userId}
-        }
-      },{
-        $project:{
-          "username" : true,
-          "online" : true,
-          '_id': false,
-          'id': '$_id'
-        }
+  try {
+    const result = await User.updateOne(filter, update);
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+exports.getChatList = async (userId) => {
+  try {
+    const users  = User.find({
+      "_id": {
+        $ne: userId
       }
-      ]).toArray( (err, result) => {
-        DB.close();
-        if( err ){
-          reject(err);
-        }
-        resolve(result);
-      });
-    } catch (error) {
-      reject(error)
-    }
-  });
+    }).select(["-password", "-socketId"])
+    return users
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
-exports.insertMessages = (messagePacket) => {
-  return new Promise( async (resolve, reject) => {
-    try {
-      const [DB, ObjectID] = await Mongodb.onConnect();
-      DB.collection('messages').insertOne(messagePacket, (err, result) =>{
-        DB.close();
-        if( err ){
-          reject(err);
-        }
-        resolve(result);
-      });
-    } catch (error) {
-      reject(error)
-    }
-  });
-}
+exports.insertMessages = async (messagePacket) => {
+  try {
+    const newMessage = new Message(messagePacket);
+    await newMessage.save()
+    return newMessage;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}; 	
 
-exports.getMessages = ({userId, toUserId}) => {
+exports.getMessages = async ({taskId, userId, toUserId}) => {
   const data = {
-      '$or' : [
-        { '$and': [
-          {
-            'toUserId': userId
-          },{
-            'fromUserId': toUserId
-          }
-        ]
-      },{
-        '$and': [ 
-          {
-            'toUserId': toUserId
-          }, {
-            'fromUserId': userId
-          }
-        ]
-      },
-    ]
-  };	    
-  return new Promise( async (resolve, reject) => {
-    try {
-      const [DB, ObjectID] = await Mongodb.onConnect();
-      DB.collection('messages').find(data).sort({'timestamp':1}).toArray( (err, result) => {
-        DB.close();
-        if( err ){
-          reject(err);
+    '$or' : [
+      { '$and': [
+        {
+          'to': userId
+        },{
+          'from': toUserId
+        },
+        {
+          'task': taskId
         }
-        resolve(result);
-      });
-    } catch (error) {
-      reject(error)
-    }
-  });
-}
+      ]
+    },{
+      '$and': [ 
+        {
+          'to': toUserId
+        }, {
+          'from': userId
+        },
+        {
+          'task': taskId
+        }
+      ]
+    },
+  ]
+};
 
-exports.logout = (userID,isSocketId) => {
-  const data = {
-    $set :{
-      online : 'N'
-    }
-  };
-  return new Promise( async (resolve, reject) => {
-    try {
-      const [DB, ObjectID] = await Mongodb.onConnect();		
-      let condition = {};
-      if (isSocketId) {
-        condition.socketId = userID;
-      }else{
-        condition._id = ObjectID(userID);
-      }
-      DB.collection('users').update( condition, data ,(err, result) => {
-        DB.close();
-        if( err ){
-          reject(err);
-        }
-        resolve(result);
-      });
-    } catch (error) {
-      reject(error)
-    }
-  });
-}
+  try {
+    const messages = await Message.find(data).sort({timestamp: 1});
+    return messages;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+
