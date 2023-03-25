@@ -1,17 +1,20 @@
 {
   "name": "rest-api",
   "version": "0.0.1",
-  "description": "This Rest API for MY Angular2 Projects.",
+  "description": "test audit back",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server"
   },
+  "engines": {
+    "node": ">16.*"
+  },
   "keywords": [
     "rest",
     "api"
   ],
-  "author": "Shashank Tiwari",
+  "author": "Ihor kryvoshlyk",
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.0",
