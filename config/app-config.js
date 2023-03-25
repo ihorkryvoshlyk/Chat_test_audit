@@ -19,7 +19,7 @@ class AppConfig{
 	includeConfig() {
 		this.app.use(bodyParser.json());
 		this.app.use(bodyParser.urlencoded({ extended: true }));
-		this.app.use(express.static(path.join(__dirname, "../build")));
+		// this.app.use(express.static(path.join(__dirname, "../build")));
 
 		new expressConfig(this.app);
 	}
