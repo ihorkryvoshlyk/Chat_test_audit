@@ -51,10 +51,10 @@ class Server{
         //     res.sendFile(path.join(__dirname, "./build/index.html"));
         // })
         const port =  process.env.PORT || 4000;
-        const host = process.env.HOST || `localhost`;      
+        // const host = process.env.HOST || `localhost`;      
 
-        this.http.listen(port, host, () => {
-            console.log(`Listening on http://${host}:${port}`);
+        this.http.listen(port, () => {
+            console.log(`Listening on ${port}`);
         });
     }
 
