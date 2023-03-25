@@ -9,6 +9,7 @@ const express = require("express");
 const http = require('http');
 const socketio = require('socket.io');
 const cors = require("cors")
+const path = require("path");
 
 const socketEvents = require('./web/socket'); 
 const routes = require('./web/routes'); 
@@ -45,6 +46,10 @@ class Server{
         this.connectDB();
         this.includeRoutes();
 
+        // production
+        this.app.use("*", (req,res) => {
+            res.sendFile(path.join(__dirname, "./build/index.html"));
+        })
         const port =  process.env.PORT || 4000;
         const host = process.env.HOST || `localhost`;      
 

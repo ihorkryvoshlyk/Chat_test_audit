@@ -27,6 +27,7 @@ class Socket{
 						message : CONSTANTS.USER_NOT_FOUND
 					});
 				}else{
+					console.log("get chat list")
 					try {
 						const [UserInfoResponse, chatlistResponse] = await Promise.all([
 							socketController.getUserInfo( {

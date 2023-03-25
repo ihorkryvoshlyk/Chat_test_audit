@@ -13,8 +13,7 @@ exports.getUserInfo = async (userId, socketId = false) => {
       "lastName": true,
       "email" : true,
       "isOnline" : true,
-      '_id': false,
-      'id': '$_id'
+      '_id': true,
     }
   }
   try {

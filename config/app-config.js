@@ -3,9 +3,11 @@
 * @author Ihor Kryvoshlyk
 */
 
+const express = require("express");
 const expressConfig = require('./express-config');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
+const path = require("path");
 
 class AppConfig{
 	
@@ -17,6 +19,8 @@ class AppConfig{
 	includeConfig() {
 		this.app.use(bodyParser.json());
 		this.app.use(bodyParser.urlencoded({ extended: true }));
+		this.app.use(express.static(path.join(__dirname, "../build")));
+
 		new expressConfig(this.app);
 	}
 

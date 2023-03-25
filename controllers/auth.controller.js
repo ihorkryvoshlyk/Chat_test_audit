@@ -72,6 +72,11 @@ exports.signin = async (req, res) => {
       });
     }
 
+    res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
+      error : true,
+      message : "incorrect password"// CONSTANTS.USER_LOGIN_FAILED
+    });
+
   } catch (error) {
     res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
       error : true,
