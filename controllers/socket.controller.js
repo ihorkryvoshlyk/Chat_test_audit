@@ -1,5 +1,5 @@
-const User = require("../models/User")
-const Message = require("../models/Message")
+const User = require("../models/user")
+const Message = require("../models/message")
 
 exports.getUserInfo = async (userId, socketId = false) => {
   let queryProjection = null;

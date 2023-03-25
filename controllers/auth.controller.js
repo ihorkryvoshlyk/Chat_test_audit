@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const User = require("../models/user");
 const CONSTANTS = require("../config/constants");
 const passwordHash = require("../utils/password-hash")
 const { validationResult } = require('express-validator');

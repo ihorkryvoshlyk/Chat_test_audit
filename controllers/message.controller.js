@@ -1,4 +1,4 @@
-const Message = require("../models/Message");
+const Message = require("../models/message");
 const CONSTANTS = require("../config/constants");
 
 exports.getMessage = async (req,res) => {
