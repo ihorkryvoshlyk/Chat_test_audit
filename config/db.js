@@ -10,7 +10,7 @@ mongoose.set('strictQuery', true);
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.DB_URL, {
+    await mongoose.connect("mongodb://admin:ki9466pVoALousEu@SG-snow-chair-52-57462.servers.mongodirector.com:27017/admin", {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
