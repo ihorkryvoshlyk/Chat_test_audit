@@ -41,6 +41,7 @@ class Socket{
 							singleUser : false,
 							chatList : chatlistResponse
 						});
+						console.log("broadcast", UserInfoResponse)
 						socket.broadcast.emit(`chat-list-response`,{
 							error : false,
 							singleUser : true,

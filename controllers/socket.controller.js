@@ -4,17 +4,28 @@ const Message = require("../models/message")
 exports.getUserInfo = async ({userId, socketId = false}) => {
   try {
     const user = await User.findById(userId);
-    if(socketId) {
-      return user.socketId;
+
+    if(user) {
+      if(socketId) {
+        return user.socketId;
+      }
+      return [{
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        isOnline: user.isOnline,
+        socketId: user.socketId,
+        _id: user._id
+      }];
     }
 
-    return [{
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      isOnline: user.isOnline,
-      socketId: user.socketId
-    }]; 
+    if(!user) {
+      if(socketId) {
+        throw new Error("Can not find user.")
+      }
+      return [];
+    }
+     
   } catch (error) {
     console.log(error)
     throw new Error(error)
