@@ -8,13 +8,13 @@ exports.getUserInfo = async ({userId, socketId = false}) => {
       return user.socketId;
     }
 
-    return {
+    return [{
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
       isOnline: user.isOnline,
       socketId: user.socketId
-    }; 
+    }]; 
   } catch (error) {
     console.log(error)
     throw new Error(error)
