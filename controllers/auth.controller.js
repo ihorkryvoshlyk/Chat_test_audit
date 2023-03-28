@@ -21,7 +21,7 @@ exports.signup = async (req,res) => {
 
     if(user) {
       return res.status(CONSTANTS.SERVER_BAD_REQUEST_CODE).json({
-        email: "Email is used already. Please use another"
+        email: CONSTANTS.EMAIL_ALREADY_EXIST
       })
     }
 
@@ -36,7 +36,6 @@ exports.signup = async (req,res) => {
     res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json(newUser)
   } catch (error) {
       res.status(CONSTANTS.SERVER_ERROR_HTTP_CODE).json({
-      error : true,
       message : CONSTANTS.SERVER_ERROR_MESSAGE
     });
   }
@@ -57,8 +56,7 @@ exports.signin = async (req, res) => {
 
     if(!user) {
       return res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
-        error : true,
-        message : CONSTANTS.USER_LOGIN_FAILED
+        email : CONSTANTS.USER_LOGIN_FAILED
       });
     }
 
@@ -73,13 +71,11 @@ exports.signin = async (req, res) => {
     }
 
     res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
-      error : true,
-      message : "incorrect password"// CONSTANTS.USER_LOGIN_FAILED
+      message : CONSTANTS.PASSWORD_INCORRECT
     });
 
   } catch (error) {
     res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
-      error : true,
       message : CONSTANTS.USER_LOGIN_FAILED
     });
   }
@@ -100,26 +96,22 @@ exports.userSessionCheck = async (req, res) => {
 
     if(!user) {
       return res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
-        error: true,
         message: CONSTANTS.USER_NOT_FOUND 
       })
     }
 
     if(user.isOnline === "N") {
       return res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
-        error: true,
         message: CONSTANTS.USER_NOT_LOGGED_IN
       })
     }
 
     return res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
-      error: true,
       message: CONSTANTS.USER_LOGIN_OK
     })
     
   } catch (error) {
     res.status(CONSTANTS.SERVER_ERROR_HTTP_CODE).json({
-      error : true,
       message : CONSTANTS.USER_NOT_FOUND
     });
   }
