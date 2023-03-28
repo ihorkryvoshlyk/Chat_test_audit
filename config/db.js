@@ -5,8 +5,11 @@
  
 "use strict";
 const mongoose = require('mongoose');
+// const dotenv = require('dotenv');
 
 mongoose.set('strictQuery', true);
+// dotenv.config();\
+
 
 const connectDB = async () => {
   try {
