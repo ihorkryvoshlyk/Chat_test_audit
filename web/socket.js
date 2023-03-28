@@ -65,25 +65,27 @@ class Socket{
 						error : true,
 						message: CONSTANTS.MESSAGE_NOT_FOUND
 					}); 
-				}else if(data.fromUserId === ''){
+				}else if(data.from === ''){
 					this.io.to(socket.id).emit(`add-message-response`,{
 						error : true,
 						message: CONSTANTS.SERVER_ERROR_MESSAGE
 					}); 
-				}else if(data.toUserId === ''){
+				}else if(data.to === ''){
 					this.io.to(socket.id).emit(`add-message-response`,{
 						error : true,
 						message: CONSTANTS.SELECT_USER
 					}); 
 				}else{
 					try{
+						console.log("add message", data.to)
 						const [toSocketId, messageResult ] = await Promise.all([
 							socketController.getUserInfo({
-								userId: data.toUserId,
+								userId: data.to,
 								socketId: true
 							}),
 							socketController.insertMessages(data)						
 						]);
+						console.log("send message", toSocketId)
 						this.io.to(toSocketId).emit(`add-message-response`,data); 
 					} catch (error) {
 						this.io.to(socket.id).emit(`add-message-response`,{

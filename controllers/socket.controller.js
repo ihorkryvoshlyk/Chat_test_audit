@@ -1,30 +1,20 @@
 const User = require("../models/user")
 const Message = require("../models/message")
 
-exports.getUserInfo = async (userId, socketId = false) => {
-  let queryProjection = null;
-  if (socketId) {
-    queryProjection = {
-      "socketId" : true
-    }
-  } else {
-    queryProjection = {
-      "firstName": true,
-      "lastName": true,
-      "email" : true,
-      "isOnline" : true,
-      '_id': true,
-    }
-  }
+exports.getUserInfo = async ({userId, socketId = false}) => {
   try {
-    const user = await User.aggregate([
-      { $match: { _id: userId } },
-      { $project: queryProjection }
-    ]);
-    return socketId ? user[0].socketId : user;
+    const user = await User.findById(userId);
+    if(socketId) {
+      return user.socketId;
+    }
+
+    const {password, ...payload} = user;
+    return payload; 
   } catch (error) {
-    throw new Error(error);
+    console.log(error)
+    throw new Error(error)
   }
+  
 }
 
 exports.addSocketId = async ({userId, socketId}) => {

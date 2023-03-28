@@ -47,9 +47,9 @@ class Server{
         this.includeRoutes();
 
         // production
-        // this.app.use("*", (req,res) => {
-        //     res.sendFile(path.join(__dirname, "./build/index.html"));
-        // })
+        this.app.use("*", (req,res) => {
+            res.sendFile(path.join(__dirname, "./build/index.html"));
+        })
         const port =  process.env.PORT || 4000;
         // const host = process.env.HOST || `localhost`;      
 
