@@ -116,3 +116,23 @@ exports.userSessionCheck = async (req, res) => {
     });
   }
 }
+
+exports.userInfo = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const user = await User.findById(userId);
+    res.json({
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      isOnline: user.isOnline,
+      socketId: user.socketId
+    });  
+  } catch (error) {
+    res.status(CONSTANTS.SERVER_ERROR_HTTP_CODE).json({
+      message : CONSTANTS.USER_NOT_FOUND
+    });
+  }
+  
+}

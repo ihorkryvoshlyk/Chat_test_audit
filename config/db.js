@@ -5,15 +5,14 @@
  
 "use strict";
 const mongoose = require('mongoose');
-// const dotenv = require('dotenv');
 
 mongoose.set('strictQuery', true);
-// dotenv.config();\
 
 
 const connectDB = async () => {
+const dbUrl = process.env.MODE === "development" ? process.env.DB_URL_DEV : process.env.DB_URL;
   try {
-    await mongoose.connect(process.env.DB_URL, {
+    await mongoose.connect(dbUrl, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

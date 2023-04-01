@@ -27,21 +27,19 @@ class Socket{
 						message : CONSTANTS.USER_NOT_FOUND
 					});
 				}else{
-					console.log("get chat list")
 					try {
-						const [UserInfoResponse, chatlistResponse] = await Promise.all([
+						const [UserInfoResponse, userlistResponse] = await Promise.all([
 							socketController.getUserInfo( {
 								userId: data.userId,
 								socketId: false
 							}),
-							socketController.getChatList( data.userId )
+							socketController.getUserList( data.userId )
 							]);
 						this.io.to(socket.id).emit(`chat-list-response`, {
 							error : false,
 							singleUser : false,
-							chatList : chatlistResponse
+							chatList : userlistResponse
 						});
-						console.log("broadcast", UserInfoResponse)
 						socket.broadcast.emit(`chat-list-response`,{
 							error : false,
 							singleUser : true,
@@ -61,24 +59,23 @@ class Socket{
 			* send the messages to the user
 			*/
 			socket.on(`add-message`, async (data) => {
-				if (data.message === '') {
+				if (!data.message) {
 					this.io.to(socket.id).emit(`add-message-response`,{
 						error : true,
 						message: CONSTANTS.MESSAGE_NOT_FOUND
 					}); 
-				}else if(data.from === ''){
+				}else if(!data.from){
 					this.io.to(socket.id).emit(`add-message-response`,{
 						error : true,
 						message: CONSTANTS.SERVER_ERROR_MESSAGE
 					}); 
-				}else if(data.to === ''){
+				}else if(!data.to){
 					this.io.to(socket.id).emit(`add-message-response`,{
 						error : true,
 						message: CONSTANTS.SELECT_USER
 					}); 
 				}else{
 					try{
-						console.log("add message", data.to)
 						const [toSocketId, messageResult ] = await Promise.all([
 							socketController.getUserInfo({
 								userId: data.to,
@@ -86,7 +83,6 @@ class Socket{
 							}),
 							socketController.insertMessages(data)						
 						]);
-						console.log("send message", toSocketId)
 						this.io.to(toSocketId).emit(`add-message-response`,data); 
 					} catch (error) {
 						this.io.to(socket.id).emit(`add-message-response`,{
@@ -96,6 +92,37 @@ class Socket{
 					}
 				}				
 			});
+
+			socket.on(`typing-message`, async(data) => {
+				if(!data.from){
+					this.io.to(socket.id).emit(`typing-message-response`,{
+						error : true,
+						message: CONSTANTS.SERVER_ERROR_MESSAGE
+					}); 
+				}else if(!data.to){
+					this.io.to(socket.id).emit(`typing-message-response`,{
+						error : true,
+						message: CONSTANTS.SELECT_USER
+					}); 
+				}else{
+					try {
+						const toSocketId = await socketController.getUserInfo({
+							userId: data.to,
+							socketId: true
+						})
+						this.io.to(toSocketId).emit(`typing-message-response`, {
+							from: data.from,
+							isTyping: data.isTyping
+						}); 
+					} catch (error) {
+						this.io.to(socket.id).emit(`typing-message-response`,{
+							error : true,
+							message : CONSTANTS.MESSAGE_STORE_ERROR
+						}); 
+					}
+					
+				}
+			})
 
 
 			/**
@@ -130,14 +157,14 @@ class Socket{
 			/**
 			* sending the disconnected user to all socket users. 
 			*/
-			socket.on('disconnect',async () => {
-				socket.broadcast.emit(`chat-list-response`,{
-					error : false ,
-					userDisconnected : true ,
-					userid : socket.request._query['userId']
-				});
+			// socket.on('disconnect',async () => {
+			// 	socket.broadcast.emit(`chat-list-response`,{
+			// 		error : false ,
+			// 		userDisconnected : true ,
+			// 		userid : socket.request._query['userId']
+			// 	});
 				
-			});
+			// });
 
 		});
 

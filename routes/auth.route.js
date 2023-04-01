@@ -19,7 +19,7 @@ router.post('/signup',
 router.post('/signin',
   check('email', CONSTANTS.EMAIL_INVALID).isEmail(),
   check('password', CONSTANTS.PASSWORD_REQUIRED).notEmpty(),
-check(
+  check(
   'password',
   CONSTANTS.PASSWORD_LENGTH
 ).isLength({ min: 6 }), authController.signin)
@@ -27,5 +27,7 @@ check(
 router.post('/userSessionCheck',
 check("userId", CONSTANTS.USERID_NOT_FOUND).notEmpty(),
 authController.userSessionCheck)
+
+router.get("/user-info/:userId", authController.userInfo)
 
 module.exports = router;
