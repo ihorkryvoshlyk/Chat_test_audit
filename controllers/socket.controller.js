@@ -37,7 +37,7 @@ exports.addSocketId = async ({userId, socketId}) => {
   const update = { 
     $set: {
       socketId: socketId,
-      online: 'Y'
+      isOnline: 'Y'
     }
   };
 
