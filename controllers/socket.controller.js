@@ -139,7 +139,7 @@ exports.getMessages = async ({taskId, userId, toUserId}) => {
 exports.logout = async (userId,isSocketId) => {
   const data = {
     $set :{
-      online : 'N'
+      isOnline : 'N'
     }
   };
 
