@@ -129,7 +129,6 @@ class Socket{
 			* Logout the user
 			*/
 			socket.on('logout', async (data)=>{
-				console.log("logout", data.userId)
 				try{
 					const userId = data.userId;
 					await socketController.logout(userId);
