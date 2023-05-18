@@ -62,7 +62,7 @@ exports.signin = async (req, res) => {
 
     if(!userToken) {
       return res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
-        redirectUrl : "https://domain.com/signin"
+        redirectUrl : "https://chat-audit-auth.onrender.com"
       });
     }
 
@@ -77,12 +77,12 @@ exports.signin = async (req, res) => {
     }
 
     res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
-        redirectUrl : "https://domain.com/signin"
+        redirectUrl : "https://chat-audit-auth.onrender.com"
     });
 
   } catch (error) {
     res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
-        redirectUrl : "https://domain.com/signin"
+        redirectUrl : "https://chat-audit-auth.onrender.com"
     });
   }
 }
