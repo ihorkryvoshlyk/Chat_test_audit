@@ -56,6 +56,14 @@ exports.signin = async (req, res) => {
   try {
     const {userId, token} = req.body;
 
+    const user = await User.findById(userId);
+
+    if(!user) {
+      return res.status(CONSTANTS.UNAUTHORIZED).json({
+        redirectUrl : "https://chat-audit-auth.onrender.com"
+    });
+    }
+
     const userToken = await Token.find({
       userId
     }).sort({_id: -1}).limit(1);
@@ -72,14 +80,12 @@ exports.signin = async (req, res) => {
       await user.save();
       return res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
         error : false,
-        userId : user._id,
+        userId,
         message : CONSTANTS.USER_LOGIN_OK
       });
     }
 
     res.status(CONSTANTS.UNAUTHORIZED).json({
-        token,
-        userToken: userToken.token,
         redirectUrl : "https://chat-audit-auth.onrender.com"
     });
 
