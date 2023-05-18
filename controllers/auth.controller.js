@@ -137,7 +137,7 @@ exports.userInfo = async (req, res) => {
   const userId = req.params.userId;
   try {
     const user = await User.findById(userId);
-    res.json({
+    res.send({
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
