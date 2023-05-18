@@ -56,13 +56,9 @@ exports.signin = async (req, res) => {
   try {
     const {userId, token} = req.body;
 
-    const userToken = await Token.findOne({
+    const userToken = await Token.find({
       userId
-    }, {}, {
-      sort: {
-        '_id': -1
-      }
-    });
+    }).sort({_id: -1}).limit(1);
 
     if(!userToken) {
       return res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
