@@ -58,6 +58,10 @@ exports.signin = async (req, res) => {
 
     const userToken = await Token.findOne({
       userId
+    }, {}, {
+      sort: {
+        _id: -1
+      }
     });
 
     if(!userToken) {
