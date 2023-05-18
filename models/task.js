@@ -1,3 +1,8 @@
+/*
+* Real time private chatting app using React, Nodejs, mongodb and Socket.io
+* @author Ihor Kryvoshlyk
+*/
+
 const mongoose = require('mongoose');
 
 const TaskSchema = new mongoose.Schema(

@@ -1,3 +1,8 @@
+/*
+* Real time private chatting app using React, Nodejs, mongodb and Socket.io
+* @author Ihor Kryvoshlyk
+*/
+
 const express = require("express");
 const router = express.Router();
 const { check } = require('express-validator');
@@ -17,12 +22,8 @@ router.post('/signup',
   authController.signup);
 
 router.post('/signin',
-  check('email', CONSTANTS.EMAIL_INVALID).isEmail(),
-  check('password', CONSTANTS.PASSWORD_REQUIRED).notEmpty(),
-  check(
-  'password',
-  CONSTANTS.PASSWORD_LENGTH
-).isLength({ min: 6 }), authController.signin)
+  check('userId', "invalid url").notEmpty(),
+  authController.signin)
 
 router.post('/userSessionCheck',
 check("userId", CONSTANTS.USERID_NOT_FOUND).notEmpty(),

@@ -153,19 +153,6 @@ class Socket{
 				}
 			});
 
-
-			/**
-			* sending the disconnected user to all socket users. 
-			*/
-			// socket.on('disconnect',async () => {
-			// 	socket.broadcast.emit(`chat-list-response`,{
-			// 		error : false ,
-			// 		userDisconnected : true ,
-			// 		userid : socket.request._query['userId']
-			// 	});
-				
-			// });
-
 		});
 
 	}
@@ -179,10 +166,9 @@ class Socket{
 				});
 				next();
 			} catch (error) {
-          		// Error
-          		console.error(error);
-          	}
-          });
+				console.error(error);
+			}
+		});
 
 		this.socketEvents();
 	}

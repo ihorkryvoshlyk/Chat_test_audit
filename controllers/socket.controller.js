@@ -1,5 +1,10 @@
-const User = require("../models/user")
-const Message = require("../models/message")
+/*
+* Real time private chatting app using React, Nodejs, mongodb and Socket.io
+* @author Ihor Kryvoshlyk
+*/
+
+const User = require("../models/user");
+const Message = require("../models/message");
 
 exports.getUserInfo = async ({userId, socketId = false}) => {
   try {

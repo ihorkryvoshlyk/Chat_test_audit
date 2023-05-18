@@ -1,4 +1,10 @@
+/*
+* Real time private chatting app using React, Nodejs, mongodb and Socket.io
+* @author Ihor Kryvoshlyk
+*/
+
 const User = require("../models/user");
+const Token = require("../models/Token");
 const CONSTANTS = require("../config/constants");
 const passwordHash = require("../utils/password-hash")
 const { validationResult } = require('express-validator');
@@ -48,19 +54,19 @@ exports.signin = async (req, res) => {
   }
 
   try {
-    const {email, password} = req.body;
+    const {userId, token} = req.body;
 
-    const user = await User.findOne({
-      email
+    const userToken = await Token.findOne({
+      userId
     });
 
-    if(!user) {
+    if(!userToken) {
       return res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
-        email : CONSTANTS.USER_LOGIN_FAILED
+        redirectUrl : "https://domain.com/signin"
       });
     }
 
-    if(passwordHash.compareHash(password, user.password)) {
+    if(userToken.token === token) {
       user.isOnline = "Y";
       await user.save();
       return res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
@@ -71,12 +77,12 @@ exports.signin = async (req, res) => {
     }
 
     res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
-      message : CONSTANTS.PASSWORD_INCORRECT
+        redirectUrl : "https://domain.com/signin"
     });
 
   } catch (error) {
     res.status(CONSTANTS.SERVER_NOT_FOUND_HTTP_CODE).json({
-      message : CONSTANTS.USER_LOGIN_FAILED
+        redirectUrl : "https://domain.com/signin"
     });
   }
 }
