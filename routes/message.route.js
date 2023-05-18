@@ -8,7 +8,7 @@ const router = express.Router();
 
 const messageController = require("../controllers/message.controller")
 
-router.post('/getMessages',
+router.post('/get-messages',
 messageController.getMessage);
 
 module.exports = router
