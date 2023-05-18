@@ -78,9 +78,7 @@ exports.signin = async (req, res) => {
     if(userToken[0].token === token) {
       user.isOnline = "Y";
       await user.save();
-      res.cookie('Signin-UserId', userId, {
-        maxAge: 900000
-      });
+      res.cookie('Signin-UserId', userId);
       return res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
         error : false,
         userId,
