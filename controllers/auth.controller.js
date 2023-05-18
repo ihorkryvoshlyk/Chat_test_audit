@@ -67,7 +67,7 @@ exports.signin = async (req, res) => {
       });
     }
 
-    if(userToken.token === token) {
+    if(userToken[0].token === token) {
       user.isOnline = "Y";
       await user.save();
       return res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
