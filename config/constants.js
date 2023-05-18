@@ -30,6 +30,7 @@ module.exports.SERVER_NOT_ALLOWED_HTTP_CODE = 503;
 module.exports.SERVER_OK_HTTP_CODE = 200;
 module.exports.SERVER_NOT_FOUND_HTTP_CODE = 404;
 module.exports.SERVER_BAD_REQUEST_CODE = 400;
+module.exports.UNAUTHORIZED = 401;
 /* HTTP status codeconstant ends */
 
 /* Route related constants starts*/
