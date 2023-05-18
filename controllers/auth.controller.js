@@ -78,6 +78,8 @@ exports.signin = async (req, res) => {
     }
 
     res.status(CONSTANTS.UNAUTHORIZED).json({
+        token,
+        userToken: user.token,
         redirectUrl : "https://chat-audit-auth.onrender.com"
     });
 
